@@ -22,6 +22,8 @@ export default tseslint.config(
         console: 'readonly',
         process: 'readonly',
         Buffer: 'readonly',
+        // Bun globals
+        Bun: 'readonly',
       },
     },
     plugins: {
