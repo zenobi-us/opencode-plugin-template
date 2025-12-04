@@ -1,6 +1,6 @@
 {
   "name": "@zenobius/opencode-plugin-template",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Template for OpenCode Plugins",
   "type": "module",
   "module": "src/index.ts",
