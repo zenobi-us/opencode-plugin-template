@@ -76,11 +76,16 @@ my-plugin/
 
 ```bash
 bun install          # Install dependencies
+mise run setup       # Initial setup
 mise run build       # Build the plugin
-mise run format      # Format code
-mise run lint        # Lint code
 mise run test        # Run tests
-mise run dev         # Watch mode for development
+mise run lint        # Lint code
+mise run lint:fix    # Fix linting issues
+mise run format      # Format code with Prettier
+mise run pkgjsonlint # Lint package.json
+mise run prepare     # Prepare for release
+mise run publish     # Publish the plugin
+mise run version     # Manage version
 ```
 
 ### Publishing
