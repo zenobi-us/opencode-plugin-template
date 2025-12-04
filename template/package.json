@@ -7,7 +7,12 @@
     "email": "{{authorEmail}}"
   },
   "type": "module",
-  "module": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "{{repositoryUrl}}"
@@ -20,8 +25,6 @@
     "dist",
     "src/version.ts"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "dependencies": {
     "@opencode-ai/plugin": "1.0.85"
   },
