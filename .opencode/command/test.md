@@ -33,7 +33,7 @@ Use a general subagent to:
 
 ## Phase 3: Verify Generator Output
 
-Use a general subagent to validate:
+Using `task(general)` to validate:
 
 **Files Generated:**
 
