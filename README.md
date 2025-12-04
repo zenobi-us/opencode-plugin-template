@@ -92,6 +92,8 @@ mise run version     # Manage version
 
 See [RELEASE.md](template/RELEASE.md) for publishing and release management details.
 
+**TL;DR:** Push single commits to main with [conventional commit format](https://www.conventionalcommits.org/). Release-please will accumulate changes in a release PR. When this release PR is merged, a new minor version is released. Until then, all other commits on main result in patch builds being published.
+
 ## Learn More
 
 - [OpenCode Documentation](https://opencode.ai/docs)
