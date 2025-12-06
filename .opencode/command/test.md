@@ -12,7 +12,7 @@ Use a general subagent to verify the environment is ready:
 
 **Task:** Verify prerequisites for generator testing
 
-- Check Bun is installed: `bun --version`
+- Check Bash is installed: `bash --version`
 - Check git is configured: `git config user.name` and `git config user.email`
 - Create or use test directory
 - Report environment status
@@ -22,7 +22,7 @@ Use a general subagent to verify the environment is ready:
 Use a general subagent to:
 
 - Clone template repo
-- Run `bunx plop --plopfile ./plopfile.js` with test inputs:
+- Run `./setup.sh` with test inputs:
   - Plugin name: `test-plugin`
   - Description: `A test plugin`
   - Author: `Test User`
@@ -42,7 +42,7 @@ Using `task(general)` to validate:
 **Generator Cleanup:**
 
 - `template/` removed
-- `plopfile.js` removed
+- `setup.sh` removed
 - Old `.git/` replaced with fresh repo
 
 **Git Repository:**
