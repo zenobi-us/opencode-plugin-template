@@ -18,7 +18,7 @@ cd my-plugin
 ### 2. Run the generator
 
 ```bash
-bunx plop --plopfile ./plopfile.js
+./setup.sh
 ```
 
 ### 3. Answer the prompts
@@ -51,7 +51,20 @@ After running the generator, you'll have:
 - ✅ Ready-to-use test setup
 - ✅ Clean git history with initial commit
 
-The generator cleans itself up - no template files or generator code left behind!
+The generator cleans itself up - no template files or setup script left behind!
+
+## Usage
+
+```bash
+# Generate a new plugin (interactive prompts)
+./setup.sh generate
+
+# Show help
+./setup.sh help
+
+# Show version
+./setup.sh version
+```
 
 ## Project Structure
 
