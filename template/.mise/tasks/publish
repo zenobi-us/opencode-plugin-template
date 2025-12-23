@@ -9,6 +9,21 @@ echo "Publishing to npm"
 echo " > with tag: ${usage_tag}..."
 echo " > npm version: $(npm --version)"
 
+# For 'next' tag, bump version to a prerelease to avoid conflicts
+if [ "${usage_tag}" = "next" ]; then
+	# Count commits since last tag for a semantic build number
+	LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+	if [ -n "$LAST_TAG" ]; then
+		BUILD_NUMBER=$(git rev-list "${LAST_TAG}..HEAD" --count)
+	else
+		BUILD_NUMBER=$(git rev-list HEAD --count)
+	fi
+	CURRENT_VERSION=$(jq -r '.version' package.json)
+	PRERELEASE_VERSION="$(semver get release "$CURRENT_VERSION")-next.${BUILD_NUMBER}"
+	echo " > bumping version: ${CURRENT_VERSION} -> ${PRERELEASE_VERSION}"
+	npm version "${PRERELEASE_VERSION}" --no-git-tag-version --allow-same-version
+fi
+
 # Determine if we should use provenance
 # Only enable in CI environments with OIDC support
 PROVENANCE_FLAG=""
