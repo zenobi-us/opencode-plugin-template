@@ -70,11 +70,11 @@ info() {
 # Convert string to kebab-case
 kebab_case() {
 	local input="$1"
-	echo "$input" \
-		| tr '[:upper:]' '[:lower:]' \
-		| sed 's/[^a-z0-9\s-]//g' \
-		| sed 's/[[:space:]_]\+/-/g' \
-		| sed 's/^-\+\|-\+$//g'
+	echo "$input" |
+		tr '[:upper:]' '[:lower:]' |
+		sed 's/[^a-z0-9\s-]//g' |
+		sed 's/[[:space:]_]\+/-/g' |
+		sed 's/^-\+\|-\+$//g'
 }
 
 # Get git remote URL with fallback
@@ -83,6 +83,41 @@ get_git_remote() {
 		return 0
 	fi
 	echo ""
+}
+
+# Derive plugin name from repository URL
+derive_plugin_name_from_repo() {
+	local repo_url="$1"
+	local repo_name
+	
+	# Extract repo name from URL (handle both SSH and HTTPS)
+	# Examples: https://github.com/user/my-plugin.git -> my-plugin
+	#           git@github.com:user/my-plugin.git -> my-plugin
+	repo_name=$(basename "$repo_url" .git | tr '[:upper:]' '[:lower:]')
+	
+	# Remove any non-alphanumeric characters except hyphens
+	repo_name=$(echo "$repo_name" | sed 's/[^a-z0-9-]/-/g' | sed 's/-\+/-/g' | sed 's/^-\|-$//g')
+	
+	echo "$repo_name"
+}
+
+# Get author name from git global config
+get_git_author_name() {
+	git config --global user.name 2>/dev/null || echo ""
+}
+
+# Get author email from git global config
+get_git_author_email() {
+	git config --global user.email 2>/dev/null || echo ""
+}
+
+# Get GitHub username from gh CLI if installed
+get_github_username() {
+	if command -v gh &>/dev/null; then
+		gh auth whoami 2>/dev/null || echo ""
+	else
+		echo ""
+	fi
 }
 
 # Validate plugin name (kebab-case, non-empty)
@@ -115,7 +150,7 @@ apply_template() {
 	local author_name="$4"
 	local author_email="$5"
 	local repository_url="$6"
-	local github_org="$7"
+	local github_owner="$7"
 
 	info "Applying template to $dest_dir"
 
@@ -140,7 +175,7 @@ apply_template() {
 				-e "s|{{authorName}}|$author_name|g" \
 				-e "s|{{authorEmail}}|$author_email|g" \
 				-e "s|{{repositoryUrl}}|$repository_url|g" \
-				-e "s|{{githubOrg}}|$github_org|g" \
+				-e "s|{{githubOrg}}|$github_owner|g" \
 				"$file"
 			rm -f "$file.bak"
 		fi
@@ -230,9 +265,28 @@ cmd_generate() {
 	default_remote=$(get_git_remote)
 	[[ -z "$default_remote" ]] && default_remote="https://github.com/username/my-opencode-plugin"
 
+	# Derive default plugin name from repository URL
+	local default_plugin_name
+	default_plugin_name=$(derive_plugin_name_from_repo "$default_remote")
+	[[ -z "$default_plugin_name" ]] && default_plugin_name="my-opencode-plugin"
+
+	# Get defaults from git config
+	local default_author_name
+	default_author_name=$(get_git_author_name)
+	[[ -z "$default_author_name" ]] && default_author_name="Your Name"
+
+	local default_author_email
+	default_author_email=$(get_git_author_email)
+	[[ -z "$default_author_email" ]] && default_author_email="you@example.com"
+
+	# Get default GitHub owner from gh CLI if available
+	local default_github_owner
+	default_github_owner=$(get_github_username)
+	[[ -z "$default_github_owner" ]] && default_github_owner="organisation/username"
+
 	# Gather user inputs
 	local plugin_name
-	plugin_name=$(prompt_input "Plugin name (kebab-case)" "my-opencode-plugin")
+	plugin_name=$(prompt_input "Plugin name (kebab-case)" "$default_plugin_name")
 	plugin_name=$(kebab_case "$plugin_name")
 	validate_plugin_name "$plugin_name" >/dev/null
 
@@ -240,16 +294,16 @@ cmd_generate() {
 	description=$(prompt_input "Plugin description" "An OpenCode plugin")
 
 	local author_name
-	author_name=$(prompt_input "Author name" "Your Name")
+	author_name=$(prompt_input "Author name" "$default_author_name")
 
 	local author_email
-	author_email=$(prompt_input "Author email" "you@example.com")
+	author_email=$(prompt_input "Author email" "$default_author_email")
 
 	local repository_url
 	repository_url=$(prompt_input "Repository URL" "$default_remote")
 
-	local github_org
-	github_org=$(prompt_input "GitHub organization/username" "username")
+	local github_owner
+	github_owner=$(prompt_input "GitHub owner" "$default_github_owner")
 
 	echo ""
 
@@ -261,7 +315,7 @@ cmd_generate() {
 		"$author_name" \
 		"$author_email" \
 		"$repository_url" \
-		"$github_org"
+		"$github_owner"
 
 	# Cleanup and initialize git
 	cleanup_git "$current_dir"
@@ -274,10 +328,18 @@ cmd_generate() {
 	echo -e "${BLUE}Next steps:${NC}"
 	echo "  1. Review package.json and update name/version as needed"
 	echo "  2. Update README.md with your plugin details"
-	echo "  3. Implement your plugin in src/"
+	echo "  3. Run: mise trust"
 	echo "  4. Run: bun install"
-	echo "  5. Run: mise run build"
+	echo "  5. Implement your plugin in src/"
+	echo "  6. Run: mise run build"
 	echo ""
+	# A note about untrusted mise config
+	echo ""
+	echo -e "${YELLOW}⚠️  Note:${NC} If you see a warning about untrusted mise config, run:"
+	echo "     mise trust"
+	echo ""
+
+	echo "Happy coding! 🚀"
 }
 
 # ============================================================================
