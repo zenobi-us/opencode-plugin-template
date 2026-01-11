@@ -4,6 +4,9 @@
 
 This is a generator repository for creating new [OpenCode](https://opencode.ai) plugins. It provides a starter template with all the scaffolding you need to build powerful OpenCode plugins.
 
+> [!WARNING]
+> Deprecated. use [zenobi-us/bun-module](https://github.com/zenobi-us/bun-module) instead
+
 ## Quick Start
 
 ### 1. Use this template
