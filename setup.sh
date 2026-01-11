@@ -163,8 +163,7 @@ apply_template() {
 	local files_to_process
 	files_to_process=$(find "$dest_dir" -type f \
 		-not -path "*/node_modules/*" \
-		-not -path "*/.git/*" \
-		-not -path "*/.mise/*")
+		-not -path "*/.git/*")
 
 	while IFS= read -r file; do
 		# Skip binary files
